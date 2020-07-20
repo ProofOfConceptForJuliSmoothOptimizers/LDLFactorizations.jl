@@ -39,6 +39,8 @@ solve1_stats = Dict{Symbol,DataFrame}(:commit => commit_stats[:solve1],
                                       :master => master_stats[:solve1])
 solve5_stats = Dict{Symbol,DataFrame}(:commit => commit_stats[:solve5],
                                       :master => master_stats[:solve5])
+
+# todo: use commit hash in file name
 save_stats(fact_stats, "ldl_commit_vs_master_fact.jld2")
 save_stats(solve1_stats, "ldl_commit_vs_master_solve1.jld2")
 save_stats(solve5_stats, "ldl_commit_vs_master_solve5.jld2")
