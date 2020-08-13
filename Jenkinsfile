@@ -62,6 +62,7 @@ pipeline {
   stages {
     stage('pull from repository') {
       steps {
+        sh 'pwd'
         sh 'git checkout ' + BRANCH_NAME
         sh 'git pull'
       }
