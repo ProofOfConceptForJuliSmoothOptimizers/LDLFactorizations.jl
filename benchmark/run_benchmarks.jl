@@ -15,7 +15,7 @@ using Plots
 
 using SolverBenchmark
 
-pyplot()
+# pyplot()
 using PlotThemes
 theme(:wong)
 
