@@ -105,7 +105,6 @@ pipeline {
       sh 'printenv'
       // sh 'git checkout ' + BRANCH_NAME
       sh '''
-      cd ..
       rm -rf $repo
       '''
       // git branch -D benchmark
