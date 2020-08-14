@@ -62,9 +62,9 @@ pipeline {
   stages {
     stage('pull from repository') {
       steps {
+        // TODO: dont hardcode repo url and make a variable for it
         sh 'git clone https://github.com/ProofOfConceptForJuliSmoothOptimizers/LDLFactorizations.jl.git'
-        dir(WORKSPACE + "/$repo"){
-            sh "pwd"
+        dir(WORKSPACE + "/$repo") {
             sh 'git checkout ' + BRANCH_NAME
             sh 'git pull'
         }        
@@ -72,31 +72,36 @@ pipeline {
     }
     stage('checkout on new branch') {
       steps {
-        sh '''
-        git fetch --no-tags origin '+refs/heads/master:refs/remotes/origin/master'
-        git checkout -b benchmark
-        '''
+        dir(WORKSPACE + "/$repo") {
+          sh '''
+          git fetch --no-tags origin '+refs/heads/master:refs/remotes/origin/master'
+          git checkout -b benchmark
+          '''    
+        }   
       }
     }
     stage('run benchmarks') {
       steps {
-        sh '''
-        set -x
-        julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c "Starting benchmarks!"
-        julia benchmark/run_benchmarks.jl
-        '''
+        dir(WORKSPACE + "/$repo") {
+          sh '''
+          set -x
+          julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c "Starting benchmarks!"
+          julia benchmark/run_benchmarks.jl
+          '''
+        }   
       }
     }
   }
   post {
     success {
-      echo "BUILD SUCCESS"
-      sh 'julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -g'
+      dir(WORKSPACE + "/$repo") {
+        sh 'julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -g'
+      }   
     }
     failure {
-      echo "BUILD FAILURE"
-      sh "echo 'pwd: ' && pwd"
-      sh 'julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c "An error has occured while running the benchmarks"'
+      dir(WORKSPACE + "/$repo") {
+        sh 'julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c "An error has occured while running the benchmarks"'
+      }   
     }
     cleanup {
       dir(WORKSPACE){
