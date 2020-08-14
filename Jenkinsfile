@@ -62,7 +62,8 @@ pipeline {
   stages {
     stage('pull from repository') {
       steps {
-        sh 'pwd'
+        sh 'git clone https://github.com/ProofOfConceptForJuliSmoothOptimizers/LDLFactorizations.jl.git'
+        sh 'cd $repo'
         sh 'git checkout ' + BRANCH_NAME
         sh 'git pull'
       }
