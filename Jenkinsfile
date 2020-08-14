@@ -99,6 +99,9 @@ pipeline {
       sh 'julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c "An error has occured while running the benchmarks"'
     }
     cleanup {
+      dir(WORKSPACE){
+            sh "pwd"
+        }        
       sh 'printenv'
       // sh 'git checkout ' + BRANCH_NAME
       sh '''
