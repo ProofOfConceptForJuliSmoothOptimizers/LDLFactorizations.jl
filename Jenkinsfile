@@ -65,9 +65,9 @@ pipeline {
         sh 'git clone https://github.com/ProofOfConceptForJuliSmoothOptimizers/LDLFactorizations.jl.git'
         dir(WORKSPACE + "/$repo"){
             sh "pwd"
+            sh 'git checkout ' + BRANCH_NAME
+            sh 'git pull'
         }        
-        sh 'git checkout ' + BRANCH_NAME
-        sh 'git pull'
       }
     }
     stage('checkout on new branch') {
