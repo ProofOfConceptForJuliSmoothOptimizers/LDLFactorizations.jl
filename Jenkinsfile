@@ -103,6 +103,8 @@ pipeline {
       sh '''
       git branch -D benchmark
       git clean -fd
+      cd ..
+      rm -rf $repo
       '''
     }
   }
