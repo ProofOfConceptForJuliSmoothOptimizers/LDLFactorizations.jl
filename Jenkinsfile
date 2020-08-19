@@ -48,7 +48,7 @@ pipeline {
 
      causeString: 'Triggered on $comment',
 
-     token: 'LDLFactorizations.jl',
+     token: 'LDLFactorizations',
 
      printContributedVariables: true,
      printPostContent: true,
