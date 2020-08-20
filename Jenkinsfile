@@ -1,8 +1,8 @@
 pipeline {
   agent any
-  environment {
-    julia = "/opt/julia/bin/julia"
-  }
+  // environment {
+  //   julia = "/opt/julia/bin/julia"
+  // }
   options {
     skipDefaultCheckout true
   }
@@ -48,7 +48,7 @@ pipeline {
 
      causeString: 'Triggered on $comment',
 
-     token: 'LDLFactorizations',
+     token: 'KrylovCI',
 
      printContributedVariables: true,
      printPostContent: true,
@@ -63,7 +63,7 @@ pipeline {
     stage('pull from repository') {
       steps {
         // TODO: dont hardcode repo url and make a variable for it
-        sh 'git clone https://github.com/ProofOfConceptForJuliSmoothOptimizers/LDLFactorizations.jl.git'
+        sh 'git clone https://${GITHUB_AUTH}@github.com/$org/$repo.git'
         dir(WORKSPACE + "/$repo") {
             sh 'git checkout ' + BRANCH_NAME
             sh 'git pull'
@@ -104,9 +104,6 @@ pipeline {
       }   
     }
     cleanup {
-      dir(WORKSPACE){
-            sh "pwd"
-        }        
       sh 'printenv'
       // sh 'git checkout ' + BRANCH_NAME
       sh '''
