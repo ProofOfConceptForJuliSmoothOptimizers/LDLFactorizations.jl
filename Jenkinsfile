@@ -1,8 +1,9 @@
+def bmarkFile = 'benchmarks.jl'
+def repo_name = "$repo"
+def token = repo_name.tokenize(".jl")[0]
+
 pipeline {
   agent any
-  // environment {
-  //   julia = "/opt/julia/bin/julia"
-  // }
   options {
     skipDefaultCheckout true
   }
@@ -48,7 +49,7 @@ pipeline {
 
      causeString: 'Triggered on $comment',
 
-     token: 'LDLFactorizations',
+     token: '$token',
 
      printContributedVariables: true,
      printPostContent: true,
@@ -62,7 +63,6 @@ pipeline {
   stages {
     stage('pull from repository') {
       steps {
-        // TODO: dont hardcode repo url and make a variable for it
         sh 'git clone https://${GITHUB_AUTH}@github.com/$org/$repo.git'
         dir(WORKSPACE + "/$repo") {
             sh 'git checkout ' + BRANCH_NAME
@@ -82,12 +82,16 @@ pipeline {
     }
     stage('run benchmarks') {
       steps {
+        script {
+          def data = env.comment.tokenize(' ')
+          if (data.size() > 2) {
+            bmarkFile = data.get(2);
+          }
+        }
         dir(WORKSPACE + "/$repo") {
-          sh '''
-          set -x
-          julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c "Starting benchmarks!"
-          julia benchmark/run_benchmarks.jl
-          '''
+          sh "set -x"
+          sh "julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c '**Starting benchmarks!**' "
+          sh "julia benchmark/run_benchmarks.jl $bmarkFile"
         }   
       }
     }
@@ -100,7 +104,7 @@ pipeline {
     }
     failure {
       dir(WORKSPACE + "/$repo") {
-        sh 'julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c "An error has occured while running the benchmarks"'
+        sh "julia benchmark/send_comment_to_pr.jl -o $org -r $repo -p $pullrequest -c '**An error has occured while running the benchmarks in file $bmarkFile** '"
       }   
     }
     cleanup {
