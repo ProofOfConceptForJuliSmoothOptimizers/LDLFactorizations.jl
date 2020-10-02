@@ -92,5 +92,5 @@ json_dict = Dict{String,Any}("description" => "LDLFactorization repository bench
                              "files" => files_dict)
 
 open("gist.json", "w") do f
-    JSON.print(f, gist_json)
+    JSON.print(f, json_dict)
 end
