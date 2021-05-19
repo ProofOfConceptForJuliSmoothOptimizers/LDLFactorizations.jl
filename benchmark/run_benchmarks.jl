@@ -1,5 +1,6 @@
 using Pkg
 bmark_dir = @__DIR__
+println(@__DIR__)
 Pkg.activate(bmark_dir)
 Pkg.instantiate()
 repo_name = string(split(ARGS[1], ".")[1])
@@ -10,7 +11,7 @@ using Git
 # we want to develop the package instead of using the release
 if isdir(joinpath(bmark_dir, "..", ".git"))
   Pkg.develop(PackageSpec(url=joinpath(bmark_dir, "..")))
-  # bmarkname = Git.head()  # sha of HEAD
+  bmarkname = Git.head()  # sha of HEAD
 end
 
 println("allo")
