@@ -2,15 +2,18 @@ using Pkg
 bmark_dir = @__DIR__
 Pkg.activate(bmark_dir)
 Pkg.instantiate()
-bmarkname = "ldlfactorizations"
+repo_name = string(split(ARGS[1], ".")[1])
+bmarkname = lowercase(repo_name)
 using Git
 
 # if we are running these benchmarks from the git repository
 # we want to develop the package instead of using the release
 if isdir(joinpath(bmark_dir, "..", ".git"))
   Pkg.develop(PackageSpec(url=joinpath(bmark_dir, "..")))
-  bmarkname = Git.head()  # sha of HEAD
+  # bmarkname = Git.head()  # sha of HEAD
 end
+
+println("allo")
 
 using DataFrames
 using GitHub
@@ -22,8 +25,8 @@ using Plots
 using SolverBenchmark
 
 # NB: benchmarkpkg will run benchmarks/benchmarks.jl by default
-commit = benchmarkpkg("LDLFactorizations")  # current state of repository
-master = benchmarkpkg("LDLFactorizations", "master")
+commit = benchmarkpkg(repo_name)  # current state of repository
+master = benchmarkpkg(repo_name, "master")
 judgement = judge(commit, master)
 
 commit_stats = bmark_results_to_dataframes(commit)
@@ -72,11 +75,10 @@ jldopen("ldl_$(bmarkname)_vs_master_judgement.jld2", "w") do file
 end
 
 # json description of gist
-json_dict = Dict{String,Any}("description" => "LDLFactorization repository benchmark",
+json_dict = Dict{String,Any}("description" => "$(repo_name) repository benchmark",
                              "public" => true,
                              "files" => files_dict)
 
 open("gist.json", "w") do f
     JSON.print(f, json_dict)
 end
-
