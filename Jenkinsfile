@@ -1,4 +1,4 @@
-def bmarkFile = 'benchmarks.jl'
+def bmarkFile = 'run_benchmarks.jl'
 pipeline {
   agent any
   environment {
@@ -49,7 +49,7 @@ pipeline {
 
      causeString: 'Triggered on $comment',
 
-     token: "LDLFactorizations",
+     token: "",
 
      printContributedVariables: true,
      printPostContent: true,
@@ -93,7 +93,7 @@ pipeline {
         }
         dir(WORKSPACE + "/$repo") {
           sh "mkdir -p $HOME/benchmarks/${org}/${repo}"
-          sh "qsub -N ${repo}_${pullrequest} -V -cwd -o $HOME/benchmarks/${org}/${repo}/${pullrequest}_bmark_output.log -e $HOME/benchmarks/${org}/${repo}/${pullrequest}_bmark_error.log push_benchmarks.sh $bmarkFile"
+          sh "qsub -N ${repo}_${pullrequest} -V -cwd -o $HOME/benchmarks/${org}/${repo}/${pullrequest}_bmark_output.log -e $HOME/benchmarks/${org}/${repo}/${pullrequest}_bmark_error.log push_benchmarks.sh $bmarkFile $repo"
         }   
       }
     }
@@ -107,9 +107,7 @@ pipeline {
         sh 'printenv'
         sh '''
         git clean -fd
-        git reset --hard
         git checkout master
-        git branch -D $BRANCH_NAME || true
         '''
       }
     }
